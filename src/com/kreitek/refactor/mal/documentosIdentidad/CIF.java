@@ -37,14 +37,12 @@ public class CIF extends DocumentoIdentidad {
             if (!(ultimoCar >= 'A' && ultimoCar <= 'Z')) {
                 return false;
             }
-            // si empiezo por A, B, E o H la última letra tiene que ser un número
         } else if (primerCar == 'A' || primerCar == 'B' || primerCar == 'E'
                 || primerCar == 'H') {
             tipoUltimoCaracter = TipoUltimoCaracter.NUMERO;
             if (!(ultimoCar >= '0' && ultimoCar <= '9')) {
                 return false;
             }
-            // en otro caso la última letra puede ser cualquier cosa
         }
         tipoUltimoCaracter = TipoUltimoCaracter.AMBOS;
         return true;
