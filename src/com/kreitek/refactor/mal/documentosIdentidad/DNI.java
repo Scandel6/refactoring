@@ -17,8 +17,13 @@ public class DNI implements DocumentoIdentidad {
         int controlDni = Integer.parseInt(parteNumerica) % 23;
 
         return this.numeroDni.length() == 9
-                || isNumeric(parteNumerica)
-                || posiblesValoresLetra.charAt(controlDni) == letraDni;
+                && isNumeric(parteNumerica)
+                && posiblesValoresLetra.charAt(controlDni) == letraDni;
+    }
+
+    @Override
+    public String getNumero() {
+        return this.numeroDni;
     }
 
     private boolean isNumeric(String parteNumerica) {
