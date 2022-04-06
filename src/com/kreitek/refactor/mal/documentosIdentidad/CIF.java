@@ -1,21 +1,18 @@
 package com.kreitek.refactor.mal.documentosIdentidad;
 
-import com.kreitek.refactor.mal.interfaces.DocumentoIdentidad;
-
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class CIF implements DocumentoIdentidad {
+public class CIF extends DocumentoIdentidad {
     private enum TipoUltimoCaracter {LETRA, NUMERO, AMBOS}
-    private String numeroCif;
 
     public CIF (String numeroCif){
-        this.numeroCif = numeroCif.toUpperCase();
+        super(numeroCif);
     }
 
     @Override
     public boolean validar() {
-        if (this.numeroCif != null) {
+        if (this.numero != null) {
             final TipoUltimoCaracter tipoUltimoCaracter = asignarTipoUltimoCaracter();
             final int posicionControl = obtenerPosicionCaracterControl();
 
@@ -30,7 +27,7 @@ public class CIF implements DocumentoIdentidad {
 
     private boolean validarUltimoCaracter(int posicionCaracterControl, TipoUltimoCaracter tipoUltimoCaracter) {
         final char caracterControl = "JABCDEFGHI".charAt(posicionCaracterControl);
-        final char ultimoCaracter = this.numeroCif.charAt(this.numeroCif.length() - 1);
+        final char ultimoCaracter = this.numero.charAt(this.numero.length() - 1);
 
         if (tipoUltimoCaracter == TipoUltimoCaracter.NUMERO) {
             if(!validarTipoNumero(ultimoCaracter, posicionCaracterControl)){
@@ -73,7 +70,7 @@ public class CIF implements DocumentoIdentidad {
     }
 
     private int obtenerPosicionCaracterControl() {
-        String digitos = this.numeroCif.substring(1, this.numeroCif.length() - 1);
+        String digitos = this.numero.substring(1, this.numero.length() - 1);
 
         int sumaPares = 0;
         for (int i = 1; i <= digitos.length() - 1; i = i + 2) {
@@ -96,8 +93,8 @@ public class CIF implements DocumentoIdentidad {
     }
 
     private boolean esUltimoCaracterCorrecto() {
-        final char primerCar = this.numeroCif.charAt(0);
-        final char ultimoCar = this.numeroCif.charAt(this.numeroCif.length() - 1);
+        final char primerCar = this.numero.charAt(0);
+        final char ultimoCar = this.numero.charAt(this.numero.length() - 1);
 
         if (primerCar == 'P' || primerCar == 'Q' || primerCar == 'S' || primerCar == 'K' || primerCar == 'W') {
             if (!(ultimoCar >= 'A' && ultimoCar <= 'Z')) {
@@ -113,8 +110,8 @@ public class CIF implements DocumentoIdentidad {
     }
 
     private TipoUltimoCaracter asignarTipoUltimoCaracter() {
-        char primerCar = this.numeroCif.charAt(0);
-        char ultimoCar = this.numeroCif.charAt(this.numeroCif.length() - 1);
+        char primerCar = this.numero.charAt(0);
+        char ultimoCar = this.numero.charAt(this.numero.length() - 1);
 
         if (primerCar == 'P' || primerCar == 'Q' || primerCar == 'S' || primerCar == 'K' || primerCar == 'W') {
             return TipoUltimoCaracter.LETRA;
@@ -127,11 +124,11 @@ public class CIF implements DocumentoIdentidad {
 
     private boolean cumplePatron() {
         Pattern mask = Pattern.compile("[ABCDEFGHJKLMNPQRSUVW][0-9]{7}[A-Z[0-9]]{1}");
-        Matcher matcher = mask.matcher(this.numeroCif);
+        Matcher matcher = mask.matcher(this.numero);
         return matcher.matches();
     }
 
     private boolean esPrimerCaracterValido() {
-        return "ABCDEFGHJKLMNPQRSUVW".indexOf(this.numeroCif.charAt(0)) != -1;
+        return "ABCDEFGHJKLMNPQRSUVW".indexOf(this.numero.charAt(0)) != -1;
     }
 }

@@ -1,29 +1,21 @@
 package com.kreitek.refactor.mal.documentosIdentidad;
 
-import com.kreitek.refactor.mal.interfaces.DocumentoIdentidad;
+public class DNI extends DocumentoIdentidad {
 
-public class DNI implements DocumentoIdentidad {
-    private String numeroDni;
-
-    public DNI(String numeroDni) {
-        this.numeroDni = numeroDni.toUpperCase();
+    public DNI(String numeroDNI) {
+        super(numeroDNI);
     }
 
     @Override
     public boolean validar() {
         String posiblesValoresLetra = "TRWAGMYFPDXBNJZSQVHLCKE";
-        String parteNumerica = this.numeroDni.trim().replaceAll(" ", "").substring(0, 8);
-        char letraDni = this.numeroDni.charAt(8);
+        String parteNumerica = this.numero.trim().replaceAll(" ", "").substring(0, 8);
+        char letraDni = this.numero.charAt(8);
         int controlDni = Integer.parseInt(parteNumerica) % 23;
 
-        return this.numeroDni.length() == 9
+        return this.numero.length() == 9
                 && isNumeric(parteNumerica)
                 && posiblesValoresLetra.charAt(controlDni) == letraDni;
-    }
-
-    @Override
-    public String getNumero() {
-        return this.numeroDni;
     }
 
     private boolean isNumeric(String parteNumerica) {
