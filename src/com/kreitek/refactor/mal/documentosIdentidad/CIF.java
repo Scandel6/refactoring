@@ -1,4 +1,6 @@
-package com.kreitek.refactor.mal;
+package com.kreitek.refactor.mal.documentosIdentidad;
+
+import com.kreitek.refactor.mal.interfaces.DocumentoIdentidad;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
