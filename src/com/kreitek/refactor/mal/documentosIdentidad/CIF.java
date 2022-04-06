@@ -6,17 +6,21 @@ import java.util.regex.Pattern;
 public class CIF extends DocumentoIdentidad {
     private enum TipoUltimoCaracter {LETRA, NUMERO, AMBOS}
 
-    public CIF (String numeroCif){
+    public CIF(String numeroCif) {
         super(numeroCif);
     }
 
     @Override
     public boolean validar() {
         if (this.numero != null) {
-            final TipoUltimoCaracter tipoUltimoCaracter = asignarTipoUltimoCaracter();
+            TipoUltimoCaracter tipoUltimoCaracter = TipoUltimoCaracter.AMBOS;
+            if (!intentarAsignarUltimoCaracter(tipoUltimoCaracter)) {
+                return false;
+            }
+
             final int posicionControl = obtenerPosicionCaracterControl();
 
-            if (!esPrimerCaracterValido() ||!cumplePatron() ||!esUltimoCaracterCorrecto()) {
+            if (!esPrimerCaracterValido() || !cumplePatron()) {
                 return false;
             }
 
@@ -25,21 +29,42 @@ public class CIF extends DocumentoIdentidad {
         return false;
     }
 
+    private boolean intentarAsignarUltimoCaracter(TipoUltimoCaracter tipoUltimoCaracter) {
+        final char primerCar = this.numero.charAt(0);
+        final char ultimoCar = this.numero.charAt(this.numero.length() - 1);
+        if (primerCar == 'P' || primerCar == 'Q' || primerCar == 'S' || primerCar == 'K' || primerCar == 'W') {
+            tipoUltimoCaracter = TipoUltimoCaracter.LETRA;
+            if (!(ultimoCar >= 'A' && ultimoCar <= 'Z')) {
+                return false;
+            }
+            // si empiezo por A, B, E o H la última letra tiene que ser un número
+        } else if (primerCar == 'A' || primerCar == 'B' || primerCar == 'E'
+                || primerCar == 'H') {
+            tipoUltimoCaracter = TipoUltimoCaracter.NUMERO;
+            if (!(ultimoCar >= '0' && ultimoCar <= '9')) {
+                return false;
+            }
+            // en otro caso la última letra puede ser cualquier cosa
+        }
+        tipoUltimoCaracter = TipoUltimoCaracter.AMBOS;
+        return true;
+    }
+
     private boolean validarUltimoCaracter(int posicionCaracterControl, TipoUltimoCaracter tipoUltimoCaracter) {
         final char caracterControl = "JABCDEFGHI".charAt(posicionCaracterControl);
         final char ultimoCaracter = this.numero.charAt(this.numero.length() - 1);
 
         if (tipoUltimoCaracter == TipoUltimoCaracter.NUMERO) {
-            if(!validarTipoNumero(ultimoCaracter, posicionCaracterControl)){
+            if (!validarTipoNumero(ultimoCaracter, posicionCaracterControl)) {
                 return false;
             }
 
         } else if (tipoUltimoCaracter == TipoUltimoCaracter.LETRA) {
-            if(!validarTipoLetra(ultimoCaracter,caracterControl)){
+            if (!validarTipoLetra(ultimoCaracter, caracterControl)) {
                 return false;
             }
         } else {
-            if(!validarTipoAmbos(ultimoCaracter,posicionCaracterControl, caracterControl)){
+            if (!validarTipoAmbos(ultimoCaracter, posicionCaracterControl, caracterControl)) {
                 return false;
             }
         }
@@ -60,13 +85,13 @@ public class CIF extends DocumentoIdentidad {
         return true;
     }
 
-    private boolean validarTipoLetra(char ultimoCaracter, char  caracterControl) {
-        return caracterControl != ultimoCaracter;
+    private boolean validarTipoLetra(char ultimoCaracter, char caracterControl) {
+        return caracterControl == ultimoCaracter;
     }
 
     private boolean validarTipoNumero(char ultimoCaracter, int posicionCaracterControl) {
         final int ultCar = Integer.parseInt(Character.toString(ultimoCaracter));
-        return posicionCaracterControl== ultCar;
+        return posicionCaracterControl == ultCar;
     }
 
     private int obtenerPosicionCaracterControl() {
@@ -90,36 +115,6 @@ public class CIF extends DocumentoIdentidad {
         int sumaTotal = sumaPares + sumaImpares;
         int numControl = 10 - (sumaTotal % 10);
         return numControl == 10 ? 0 : numControl;
-    }
-
-    private boolean esUltimoCaracterCorrecto() {
-        final char primerCar = this.numero.charAt(0);
-        final char ultimoCar = this.numero.charAt(this.numero.length() - 1);
-
-        if (primerCar == 'P' || primerCar == 'Q' || primerCar == 'S' || primerCar == 'K' || primerCar == 'W') {
-            if (!(ultimoCar >= 'A' && ultimoCar <= 'Z')) {
-                return false;
-            }
-        } else if (primerCar == 'A' || primerCar == 'B' || primerCar == 'E' || primerCar == 'H') {
-            if (!(ultimoCar >= '0' && ultimoCar <= '9')) {
-                return false;
-            }
-        }
-        return true;
-
-    }
-
-    private TipoUltimoCaracter asignarTipoUltimoCaracter() {
-        char primerCar = this.numero.charAt(0);
-        char ultimoCar = this.numero.charAt(this.numero.length() - 1);
-
-        if (primerCar == 'P' || primerCar == 'Q' || primerCar == 'S' || primerCar == 'K' || primerCar == 'W') {
-            return TipoUltimoCaracter.LETRA;
-        } else if (primerCar == 'A' || primerCar == 'B' || primerCar == 'E' || primerCar == 'H') {
-            return TipoUltimoCaracter.NUMERO;
-        } else {
-            return TipoUltimoCaracter.AMBOS;
-        }
     }
 
     private boolean cumplePatron() {
